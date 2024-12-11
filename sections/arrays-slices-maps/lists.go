@@ -26,3 +26,12 @@ func ArrayList() {
 	fmt.Println(len(highlightedPrices), cap(highlightedPrices))
 
 }
+
+func ListUnpack() {
+	prices := []float64{11.32, 62.32, 83.12, 40.22}
+	fmt.Println(prices)
+
+	discountPrices := []float64{5.31, 2.42, 8.1}
+	prices = append(prices, discountPrices...)
+	fmt.Println(prices)
+}
