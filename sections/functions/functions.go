@@ -1,10 +1,10 @@
-package main
+package functions
 
 import "fmt"
 
 type transformFn func(int) int
 
-func main() {
+func Functions() {
 	numbers := []int{1, 2, 3, 4}
 	moreNumbers := []int{5, 3, 7}
 	fmt.Println("Normal", numbers)

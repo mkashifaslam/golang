@@ -1,4 +1,4 @@
-package main
+package exercises
 
 import "fmt"
 
@@ -8,7 +8,7 @@ type Product struct {
 	price float64
 }
 
-func PracticeArraySlice() {
+func Exercises() {
 	// 1)
 	hobbies := [3]string{"watching movies", "travel world", "reading tech articles"}
 	fmt.Println(hobbies)

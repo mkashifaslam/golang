@@ -1,8 +1,8 @@
-package main
+package arrays
 
 import "fmt"
 
-func ArrayList() {
+func Array() {
 	prices := [4]float64{11.32, 62.32, 83.12, 40.22}
 	fmt.Println(prices)
 	var books = [4]string{"The book"}
