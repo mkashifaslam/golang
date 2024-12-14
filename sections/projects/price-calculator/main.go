@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	priceslist "github.com/mkashifaslam/golang/price-calculator/prices-list"
-	taxcalc "github.com/mkashifaslam/golang/price-calculator/tax-calculator"
+	priceslist "github.com/mkashifaslam/golang/projects/price-calculator/prices-list"
+	taxcalc "github.com/mkashifaslam/golang/projects/price-calculator/tax-calculator"
 )
 
 func main() {
