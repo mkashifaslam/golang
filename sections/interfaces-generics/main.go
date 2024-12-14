@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/golang/interfaces-generics/note"
-	"github.com/golang/interfaces-generics/todo"
+	"github.com/mkashifaslam/golang/interfaces-generics/note"
+	"github.com/mkashifaslam/golang/interfaces-generics/todo"
 	"os"
 	"strings"
 )
