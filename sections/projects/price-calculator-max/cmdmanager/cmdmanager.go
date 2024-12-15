@@ -14,7 +14,7 @@ func (cmd CmdManager) ReadLines() ([]string, error) {
 		fmt.Print("Enter price ")
 		fmt.Scan(&price)
 
-		if price == "" {
+		if price == "0" {
 			break
 		}
 
