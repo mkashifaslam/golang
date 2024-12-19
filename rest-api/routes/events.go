@@ -78,3 +78,48 @@ func createEvent(context *gin.Context) {
 		"event":   event,
 	})
 }
+
+func updateEvent(context *gin.Context) {
+	logger.Println("Call UpdateEvent Route")
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	logger.Println("[Event] RequestID:", eventId)
+	if err != nil {
+		logger.Println("[Event] RequestError:", err)
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not parse event id",
+		})
+		return
+	}
+	_, err = models.GetEventByID(eventId)
+	if err != nil {
+		logger.Println("[Event] GetError:", err)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not fetch event",
+		})
+		return
+	}
+
+	var updatedEvent *models.Event
+	err = context.ShouldBindJSON(&updatedEvent)
+	if err != nil {
+		logger.Println("[Event] RequestError:", err)
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not parse request data",
+		})
+		return
+	}
+
+	updatedEvent.ID = eventId
+	err = updatedEvent.Update()
+	if err != nil {
+		logger.Println("[Event] UpdateError:", err)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not update event",
+		})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{
+		"message": "Event updated successfully",
+	})
+
+}
