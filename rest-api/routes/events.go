@@ -123,3 +123,35 @@ func updateEvent(context *gin.Context) {
 	})
 
 }
+
+func deleteEvent(context *gin.Context) {
+	logger.Println("Call DeleteEvent Route")
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	logger.Println("[Event] RequestID:", eventId)
+	if err != nil {
+		logger.Println("[Event] RequestError:", err)
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not parse event id",
+		})
+		return
+	}
+	event, err := models.GetEventByID(eventId)
+	if err != nil {
+		logger.Println("[Event] GetError:", err)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not fetch event",
+		})
+		return
+	}
+	err = event.Delete()
+	if err != nil {
+		logger.Println("[Event] DeleteError:", err)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not delete event",
+		})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{
+		"message": "Event deleted successfully",
+	})
+}
