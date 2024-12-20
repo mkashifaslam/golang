@@ -7,11 +7,19 @@ import (
 )
 
 var logger = log.Default()
+
 var DB *sql.DB
 
 func InitDB() {
+	setupDB("sqlite3", "api.db")
+
+	createTables()
+	logger.Println("Successfully connected to database")
+}
+
+func setupDB(driverName, sourceName string) {
 	var err error
-	DB, err = sql.Open("sqlite3", "api.db")
+	DB, err = sql.Open(driverName, sourceName)
 
 	if err != nil {
 		panic("could not connect to database")
@@ -19,9 +27,6 @@ func InitDB() {
 
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
-
-	createTables()
-	logger.Println("Successfully connected to database")
 }
 
 func createTables() {
@@ -32,11 +37,7 @@ func createTables() {
 		    password TEXT NOT NULL
 		)
 	`
-
-	_, err := DB.Exec(createUsersTable)
-	if err != nil {
-		panic("could not create users table")
-	}
+	createTable("users", createUsersTable)
 
 	createEventsTable := `
 		CREATE TABLE IF NOT EXISTS events (
@@ -49,9 +50,13 @@ func createTables() {
 		    FOREIGN KEY (user_id) REFERENCES users(id)
 		)
 	`
+	createTable("events", createEventsTable)
+}
 
-	_, err = DB.Exec(createEventsTable)
+func createTable(tableName, query string) {
+	_, err := DB.Exec(query)
+
 	if err != nil {
-		panic("could not create events table")
+		panic("could not create " + tableName + " table")
 	}
 }
