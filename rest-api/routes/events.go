@@ -3,7 +3,6 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mkashifaslam/golang/rest-api/models"
-	"github.com/mkashifaslam/golang/rest-api/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -52,23 +51,9 @@ func getEvent(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	token := context.Request.Header.Get("Authorization")
-
-	if token == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
-		return
-	}
-
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
-		return
-	}
-
 	logger.Println("Call CreateEvent Route")
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	err := context.ShouldBindJSON(&event)
 	if err != nil {
 		logger.Println("[Event] RequestError:", err)
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -77,6 +62,7 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
+	userId := context.GetInt64("userId")
 	event.UserID = userId
 	err = event.Save()
 	if err != nil {
@@ -105,11 +91,19 @@ func updateEvent(context *gin.Context) {
 		})
 		return
 	}
-	_, err = models.GetEventByID(eventId)
+	event, err := models.GetEventByID(eventId)
 	if err != nil {
 		logger.Println("[Event] GetError:", err)
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Could not fetch event",
+		})
+		return
+	}
+
+	userId := context.GetInt64("userId")
+	if event.UserID != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Not authorized to update event",
 		})
 		return
 	}
@@ -143,6 +137,7 @@ func deleteEvent(context *gin.Context) {
 	logger.Println("Call DeleteEvent Route")
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	logger.Println("[Event] RequestID:", eventId)
+	userId := context.GetInt64("userId")
 	if err != nil {
 		logger.Println("[Event] RequestError:", err)
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -158,6 +153,14 @@ func deleteEvent(context *gin.Context) {
 		})
 		return
 	}
+
+	if event.UserID != userId {
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Not authorized to delete event",
+		})
+		return
+	}
+
 	err = event.Delete()
 	if err != nil {
 		logger.Println("[Event] DeleteError:", err)
