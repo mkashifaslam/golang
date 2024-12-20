@@ -41,21 +41,29 @@ func (u *User) Save() error {
 }
 
 func (u *User) ValidateCredentials() error {
-	query := "SELECT password FROM users WHERE email = ?"
+	query := "SELECT id, password FROM users WHERE email = ?"
+	logger.Printf("\nUserEmail: %s\n", u.Email)
 	row := db.DB.QueryRow(query, u.Email)
 
 	var retrievedPassword string
-	err := row.Scan(&retrievedPassword)
+	var retrievedID int64
+	err := row.Scan(&retrievedID, &retrievedPassword)
 
 	if err != nil {
 		return errors.New("credentials invalid")
 	}
 
+	logger.Printf("\nUserID: %d\n", retrievedID)
+	logger.Printf("HashPassword: %s\nPassword: %s\n", retrievedPassword, u.Password)
+
 	passwordIsValid := utils.CheckPasswordHash(u.Password, retrievedPassword)
 
+	logger.Println("PasswordValid", passwordIsValid)
 	if !passwordIsValid {
 		return errors.New("credentials invalid")
 	}
+
+	u.ID = retrievedID
 
 	return nil
 }
