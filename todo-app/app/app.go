@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"github.com/mkashifaslam/golang/todo-app/input"
 	t "github.com/mkashifaslam/golang/todo-app/task"
+	"github.com/mkashifaslam/golang/todo-app/utils"
 )
 
 func Run() {
 	action, err := input.GetUserInput()
 	if err != nil {
-		fmt.Println("Error reading user input", err.Error())
+		utils.PrintError(err, "Error reading user input")
 	}
 
 	title := input.GetUserStringInput("Title")
