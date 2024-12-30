@@ -1,16 +1,21 @@
 package task
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/mkashifaslam/golang/todo-app/utils"
+)
 
 var tasks []Task
 
 type Task struct {
-	Title       string
-	IsCompleted bool
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	IsCompleted bool   `json:"is_completed"`
 }
 
 func New(title string) *Task {
 	return &Task{
+		ID:    utils.GenerateRandomInt(1, 100),
 		Title: title,
 	}
 }
@@ -20,7 +25,7 @@ func (t *Task) Complete() {
 }
 
 func (t *Task) Print() {
-	fmt.Printf("Title: %s, IsComplete: %t\n", t.Title, t.IsCompleted)
+	fmt.Printf("ID: %d, Title: %s, IsComplete: %t\n", t.ID, t.Title, t.IsCompleted)
 }
 
 func AddToList(t *Task) {

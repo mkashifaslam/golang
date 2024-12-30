@@ -14,17 +14,16 @@ func Run() {
 	}
 
 	title := input.GetUserStringInput("Title")
-	execAction(action, title)
+	task := t.New(title)
+	execAction(action, task)
 
 	t.PrintList()
 	fmt.Println("Done")
 }
 
-func execAction(action string, title string) {
+func execAction(action string, task *t.Task) {
 	switch action {
 	case "add":
-		fmt.Println("Adding task...", title)
-		task := t.New(title)
 		t.AddToList(task)
 	case "complete":
 		fmt.Println("Complete task")

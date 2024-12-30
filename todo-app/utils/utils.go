@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 )
 
 func ErrorHandler(err error, msg string) error {
@@ -30,4 +31,8 @@ func PrintError(err error, msg string) {
 	if err != nil {
 		fmt.Println(msg, err.Error())
 	}
+}
+
+func GenerateRandomInt(min, max int) int {
+	return rand.Intn(max-min+1) + min
 }
