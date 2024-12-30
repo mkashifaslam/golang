@@ -7,10 +7,12 @@ import (
 )
 
 func Run() {
-	var action string
-	input.GetUserInput(&action)
+	action, err := input.GetUserInput()
+	if err != nil {
+		fmt.Println("Error reading user input", err.Error())
+	}
 
-	title := input.GetTitle("Title")
+	title := input.GetUserStringInput("Title")
 	execAction(action, title)
 
 	t.PrintList()

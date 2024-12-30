@@ -3,25 +3,20 @@ package input
 import (
 	"bufio"
 	"fmt"
+	"github.com/mkashifaslam/golang/todo-app/utils"
 	"os"
 	"strings"
 )
 
-func GetUserCommand() string {
-	var command string
-	GetUserInput(&command)
-	return command
+func GetUserInput() (string, error) {
+	var input string
+	err := getCmdInput(&input)
+	formattedError := utils.ErrorHandler(err, "please enter a valid user input")
+
+	return input, formattedError
 }
 
-func GetUserInput(input *string) {
-	err := GetUserInputCmd(input)
-	if err != nil {
-		fmt.Println("UserInput: user input was incorrect")
-		fmt.Println("Error detail", err)
-	}
-}
-
-func GetUserInputCmd(input *string) error {
+func getCmdInput(input *string) error {
 	_, err := fmt.Scan(input)
 	if err != nil {
 		return err
@@ -30,15 +25,15 @@ func GetUserInputCmd(input *string) error {
 	return nil
 }
 
-func GetTitle(prompt string) string {
-	title := GetUserInputReader(prompt)
-	if title == "" {
-		fmt.Println("TitleInput: user input was incorrect")
+func GetUserStringInput(prompt string) string {
+	input := getStringInput(prompt)
+	if input == "" {
+		fmt.Println("UserInput: user input was incorrect")
 	}
-	return title
+	return input
 }
 
-func GetUserInputReader(prompt string) string {
+func getStringInput(prompt string) string {
 	fmt.Printf("%s ", prompt)
 
 	reader := bufio.NewReader(os.Stdin)
