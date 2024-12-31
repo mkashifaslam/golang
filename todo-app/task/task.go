@@ -86,3 +86,25 @@ func GetTaskByID(id int) (*Task, error) {
 
 	return &task, nil
 }
+
+func CompleteTaskById(tasks []Task, id int) ([]Task, error) {
+	for i, t := range tasks {
+		if t.ID == id {
+			t.Complete()
+			tasks[i] = t
+			return tasks, nil
+		}
+	}
+
+	return nil, utils.NewError("task not found")
+}
+
+func DeleteTaskByID(tasks []Task, id int) ([]Task, error) {
+	for i, t := range tasks {
+		if t.ID == id {
+			return append(tasks[:i], tasks[i+1:]...), nil
+		}
+	}
+
+	return nil, utils.NewError("task not found")
+}

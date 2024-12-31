@@ -10,7 +10,7 @@ import (
 const OutputFileName = "todos.txt"
 
 func Read() ([]string, error) {
-	file, err := os.OpenFile(OutputFileName, os.O_RDONLY, 0644)
+	file, err := os.Open(OutputFileName)
 
 	if err != nil {
 		return nil, utils.ErrorHandler(err, "failed to open file")
@@ -55,7 +55,7 @@ func Append(data any) error {
 }
 
 func Write(data any) error {
-	file, err := os.OpenFile(OutputFileName, os.O_WRONLY|os.O_CREATE, 0644)
+	file, err := os.Create(OutputFileName)
 
 	if err != nil {
 		return utils.ErrorHandler(err, "failed to write file")

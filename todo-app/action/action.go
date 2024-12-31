@@ -2,6 +2,7 @@ package action
 
 import (
 	"fmt"
+	"github.com/mkashifaslam/golang/todo-app/store"
 	t "github.com/mkashifaslam/golang/todo-app/task"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 	"strconv"
@@ -82,11 +83,51 @@ func findTask(taskId string) *t.Task {
 }
 
 func completeTask(taskId string) {
-	task := findTask(taskId)
-	task.Complete()
+	taskIdInt64, err := strconv.ParseInt(taskId, 10, 64)
+
+	if err != nil {
+		utils.PrintError(err, "ParsingError:")
+	}
+
+	tasks, err := t.GetTasks()
+	if err != nil {
+		utils.PrintError(err, "TasksLoadingError:")
+	}
+
+	tasks, err = t.CompleteTaskById(tasks, int(taskIdInt64))
+	if err != nil {
+		utils.PrintError(err, "TaskCompletedError:")
+	}
+
+	if err != nil {
+		err = store.Write(tasks)
+		if err != nil {
+			utils.PrintError(err, "TasksUpdateError:")
+		}
+	}
 }
 
 func deleteTask(taskId string) {
-	task := findTask(taskId)
-	task.Delete()
+	taskIdInt64, err := strconv.ParseInt(taskId, 10, 64)
+
+	if err != nil {
+		utils.PrintError(err, "ParsingError:")
+	}
+
+	tasks, err := t.GetTasks()
+	if err != nil {
+		utils.PrintError(err, "TasksLoadingError:")
+	}
+
+	tasks, err = t.DeleteTaskByID(tasks, int(taskIdInt64))
+	if err != nil {
+		utils.PrintError(err, "TaskDeleteError:")
+	}
+
+	if err != nil {
+		err = store.Write(tasks)
+		if err != nil {
+			utils.PrintError(err, "TasksUpdateError:")
+		}
+	}
 }
