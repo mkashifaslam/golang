@@ -60,9 +60,11 @@ func listTasks() {
 
 func findTaskById(taskId string) (*t.Task, error) {
 	taskIdInt64, err := strconv.ParseInt(taskId, 10, 64)
+
 	if err != nil {
-		return nil, utils.ErrorHandler(err, "Error parsing taskId")
+		return nil, utils.ErrorHandler(err, "ParsingError:")
 	}
+
 	return t.GetTaskByID(int(taskIdInt64))
 }
 
@@ -70,7 +72,8 @@ func findTask(taskId string) *t.Task {
 	task, err := findTaskById(taskId)
 
 	if err != nil {
-		utils.PrintError(err, "Error finding task")
+		utils.PrintError(err, "FindError:")
+		return nil
 	}
 
 	task.Print()

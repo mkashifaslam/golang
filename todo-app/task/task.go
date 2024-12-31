@@ -69,21 +69,19 @@ func GetTaskByID(id int) (*Task, error) {
 	var tasks, err = GetTasks()
 
 	if err != nil {
-		return nil, utils.ErrorHandler(err, "Tasks loading failed")
+		return nil, utils.ErrorHandler(err, "TasksLoadingFailed:")
 	}
 
 	var task Task
 	for _, t := range tasks {
 		if t.ID == id {
 			task = t
-			fmt.Println("task found")
 			break
 		}
 	}
 
 	if task.ID == 0 {
-		fmt.Println("task not found")
-		return nil, utils.ErrorHandler(err, "task not found")
+		return nil, utils.NewError("task not found")
 	}
 
 	return &task, nil
