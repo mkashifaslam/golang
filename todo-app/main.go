@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mkashifaslam/golang/todo-app/command"
-	"github.com/mkashifaslam/golang/todo-app/input"
+	cmd "github.com/mkashifaslam/golang/todo-app/command"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 )
 
@@ -19,8 +18,12 @@ func main() {
 		"\n\n")
 	fmt.Println("----------------------")
 	for {
-		userCmd, err := input.GetUserInput()
-		utils.PrintError(err, "Error reading command")
-		command.Handler(userCmd)
+		userCmd, err := cmd.GetInput()
+		utils.PrintError(err, "InputError:")
+		inputCmd, err := cmd.Parse(userCmd)
+		utils.PrintError(err, "ParsingError:")
+		if inputCmd != nil {
+			cmd.Handler(inputCmd.App, inputCmd.Action, inputCmd.Args)
+		}
 	}
 }

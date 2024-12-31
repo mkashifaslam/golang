@@ -6,6 +6,10 @@ import (
 	"math/rand"
 )
 
+func NewError(msg string) error {
+	return errors.New(msg)
+}
+
 func ErrorHandler(err error, msg string) error {
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -17,11 +21,11 @@ func ErrorHandler(err error, msg string) error {
 
 func getErrorMessage(err error, msg string) (error error) {
 	if msg != "" {
-		error = errors.New(msg)
+		error = NewError(msg)
 	} else if err != nil {
-		error = errors.New("Error: " + err.Error())
+		error = NewError("Error: " + err.Error())
 	} else {
-		error = errors.New("unknown error")
+		error = NewError("unknown error")
 	}
 
 	return

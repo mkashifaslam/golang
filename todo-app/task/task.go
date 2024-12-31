@@ -28,6 +28,9 @@ func (t *Task) Complete() {
 	t.IsCompleted = true
 }
 
+func (t *Task) Delete() {
+}
+
 func (t *Task) Print() {
 	fmt.Printf("ID: %d, Title: %s, IsComplete: %t\n", t.ID, t.Title, t.IsCompleted)
 }

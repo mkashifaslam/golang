@@ -2,37 +2,48 @@ package action
 
 import (
 	"fmt"
-	"github.com/mkashifaslam/golang/todo-app/input"
 	t "github.com/mkashifaslam/golang/todo-app/task"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 	"strconv"
 )
 
-func GetActionInput() string {
-	userInput, err := input.GetUserInput()
-	if err != nil {
-		utils.PrintError(err, "Error reading user input")
+type Act string
+
+const (
+	Add      Act = "add"
+	List     Act = "list"
+	Find     Act = "find"
+	Delete   Act = "delete"
+	Complete Act = "complete"
+)
+
+func IsValid(act Act) bool {
+	switch act {
+	case Add, List, Find, Delete, Complete:
+		return true
+	default:
+		return false
 	}
-	return userInput
 }
 
-func Run(action string) {
+func Run(action Act, args string) {
 	switch action {
-	case "add":
-		addTask()
-	case "list":
+	case Add:
+		addTask(args)
+	case List:
 		listTasks()
-	case "find":
-		findTask()
-	case "complete":
-		completeTask()
+	case Find:
+		findTask(args)
+	case Complete:
+		completeTask(args)
+	case Delete:
+		deleteTask(args)
 	default:
 		fmt.Println("Unknown action")
 	}
 }
 
-func addTask() {
-	title := input.GetUserStringInput("Title")
+func addTask(title string) {
 	task := t.New(title)
 	err := task.Save()
 	if err != nil {
@@ -47,8 +58,7 @@ func listTasks() {
 	}
 }
 
-func findTaskById() (*t.Task, error) {
-	taskId := input.GetUserStringInput("TaskId")
+func findTaskById(taskId string) (*t.Task, error) {
 	taskIdInt64, err := strconv.ParseInt(taskId, 10, 64)
 	if err != nil {
 		return nil, utils.ErrorHandler(err, "Error parsing taskId")
@@ -56,8 +66,8 @@ func findTaskById() (*t.Task, error) {
 	return t.GetTaskByID(int(taskIdInt64))
 }
 
-func findTask() *t.Task {
-	task, err := findTaskById()
+func findTask(taskId string) *t.Task {
+	task, err := findTaskById(taskId)
 
 	if err != nil {
 		utils.PrintError(err, "Error finding task")
@@ -68,7 +78,12 @@ func findTask() *t.Task {
 	return task
 }
 
-func completeTask() {
-	task := findTask()
+func completeTask(taskId string) {
+	task := findTask(taskId)
 	task.Complete()
+}
+
+func deleteTask(taskId string) {
+	task := findTask(taskId)
+	task.Delete()
 }

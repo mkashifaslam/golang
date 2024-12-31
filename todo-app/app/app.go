@@ -2,13 +2,10 @@ package app
 
 import (
 	"fmt"
-	"github.com/mkashifaslam/golang/todo-app/action"
+	a "github.com/mkashifaslam/golang/todo-app/action"
 )
 
-func Run() {
-	// take user action input
-	actionInput := action.GetActionInput()
-	// execute user action
-	action.Run(actionInput)
+func Run(action a.Act, args string) {
+	a.Run(action, args)
 	fmt.Println("Done")
 }
