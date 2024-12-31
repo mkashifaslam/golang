@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"github.com/mkashifaslam/golang/todo-app/store"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 )
 
@@ -20,6 +21,10 @@ func New(title string) *Task {
 	}
 }
 
+func (t *Task) Save() error {
+	return store.SaveToFile(t)
+}
+
 func (t *Task) Complete() {
 	t.IsCompleted = true
 }
@@ -36,4 +41,17 @@ func PrintList() {
 	for _, t := range tasks {
 		t.Print()
 	}
+}
+
+func PrintTasks() error {
+	lines, err := store.ReadFromFile()
+	if err != nil {
+		return err
+	}
+
+	for _, line := range lines {
+		fmt.Println(line)
+	}
+
+	return nil
 }

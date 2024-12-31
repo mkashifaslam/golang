@@ -9,22 +9,26 @@ import (
 
 func Run() {
 	action, err := input.GetUserInput()
+
 	if err != nil {
 		utils.PrintError(err, "Error reading user input")
 	}
 
-	title := input.GetUserStringInput("Title")
-	task := t.New(title)
-	execAction(action, task)
+	execAction(action)
 
-	t.PrintList()
 	fmt.Println("Done")
 }
 
-func execAction(action string, task *t.Task) {
+func execAction(action string) {
 	switch action {
 	case "add":
-		t.AddToList(task)
+		title := input.GetUserStringInput("Title")
+		task := t.New(title)
+		_ = task.Save()
+	case "list":
+		_ = t.PrintTasks()
+	case "find":
+		fmt.Println("task found")
 	case "complete":
 		fmt.Println("Complete task")
 	default:
