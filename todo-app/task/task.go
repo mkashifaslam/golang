@@ -1,12 +1,11 @@
 package task
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/mkashifaslam/golang/todo-app/store"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 )
-
-var tasks []Task
 
 type Task struct {
 	ID          int    `json:"id"`
@@ -22,7 +21,7 @@ func New(title string) *Task {
 }
 
 func (t *Task) Save() error {
-	return store.SaveToFile(t)
+	return store.Append(t)
 }
 
 func (t *Task) Complete() {
@@ -33,18 +32,25 @@ func (t *Task) Print() {
 	fmt.Printf("ID: %d, Title: %s, IsComplete: %t\n", t.ID, t.Title, t.IsCompleted)
 }
 
-func AddToList(t *Task) {
-	tasks = append(tasks, *t)
-}
+func GetTasks() ([]Task, error) {
+	lines, err := store.Read()
 
-func PrintList() {
-	for _, t := range tasks {
-		t.Print()
+	if err != nil {
+		return nil, err
 	}
+
+	var tasks []Task
+	for _, line := range lines {
+		var task Task
+		_ = json.Unmarshal([]byte(line), &task)
+		tasks = append(tasks, task)
+	}
+
+	return tasks, nil
 }
 
 func PrintTasks() error {
-	lines, err := store.ReadFromFile()
+	lines, err := store.Read()
 	if err != nil {
 		return err
 	}
@@ -54,4 +60,28 @@ func PrintTasks() error {
 	}
 
 	return nil
+}
+
+func GetTaskByID(id int) (*Task, error) {
+	var tasks, err = GetTasks()
+
+	if err != nil {
+		return nil, utils.ErrorHandler(err, "Tasks loading failed")
+	}
+
+	var task Task
+	for _, t := range tasks {
+		if t.ID == id {
+			task = t
+			fmt.Println("task found")
+			break
+		}
+	}
+
+	if task.ID == 0 {
+		fmt.Println("task not found")
+		return nil, utils.ErrorHandler(err, "task not found")
+	}
+
+	return &task, nil
 }
