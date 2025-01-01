@@ -1,7 +1,6 @@
 package store
 
 import (
-	"encoding/json"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 	"os"
 )
@@ -17,20 +16,11 @@ func Read() (string, error) {
 	return string(content), nil
 }
 
-func Write(data any) error {
-	file, err := os.Create(OutputFileName)
+func Write(data string) error {
+	err := os.WriteFile(OutputFileName, []byte(data), 0644)
 
 	if err != nil {
 		return utils.ErrorHandler(err, "failed to write file")
-	}
-
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	err = encoder.Encode(data)
-
-	if err != nil {
-		return utils.ErrorHandler(err, "failed to convert data to json")
 	}
 
 	return nil

@@ -26,17 +26,14 @@ func (t *Task) Save() error {
 		utils.PrintError(err, "TasksLoadingFailed:")
 	}
 
-	t.Print()
-	fmt.Println("Before save")
-	for _, tsk := range tasks {
-		tsk.Print()
-	}
 	tasks = append(tasks, *t)
-	fmt.Println("after save")
-	for _, tsk := range tasks {
-		tsk.Print()
+
+	tasksToJson, err := TasksToJson(tasks)
+	if err != nil {
+		utils.PrintError(err, "TasksToJsonError:")
 	}
-	return store.Write(tasks)
+
+	return store.Write(tasksToJson)
 }
 
 func (t *Task) Complete() {
@@ -57,8 +54,7 @@ func GetTasks() ([]Task, error) {
 		return nil, err
 	}
 
-	var tasks []Task
-	err = json.Unmarshal([]byte(content), &tasks)
+	tasks, err := JsonToTasks(content)
 
 	return tasks, nil
 }
@@ -69,8 +65,7 @@ func PrintTasks() error {
 		return err
 	}
 
-	var tasks []Task
-	err = json.Unmarshal([]byte(content), &tasks)
+	tasks, err := JsonToTasks(content)
 
 	for _, task := range tasks {
 		task.Print()
@@ -121,4 +116,18 @@ func DeleteTaskByID(tasks []Task, id int) ([]Task, error) {
 	}
 
 	return nil, utils.NewError("task not found")
+}
+
+func JsonToTasks(content string) ([]Task, error) {
+	var tasks []Task
+	err := json.Unmarshal([]byte(content), &tasks)
+	return tasks, err
+}
+
+func TasksToJson(tasks []Task) (string, error) {
+	content, err := json.Marshal(tasks)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
 }

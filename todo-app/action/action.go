@@ -99,12 +99,15 @@ func completeTask(taskId string) {
 		utils.PrintError(err, "TaskCompletedError:")
 	}
 
+	tasksToJson, err := t.TasksToJson(tasks)
 	if err != nil {
-		err = store.Write(tasks)
-		if err != nil {
-			utils.PrintError(err, "TasksUpdateError:")
-		}
+		utils.PrintError(err, "TasksToJsonError:")
 	}
+	err = store.Write(tasksToJson)
+	if err != nil {
+		utils.PrintError(err, "TasksUpdateError:")
+	}
+
 }
 
 func deleteTask(taskId string) {
@@ -124,10 +127,13 @@ func deleteTask(taskId string) {
 		utils.PrintError(err, "TaskDeleteError:")
 	}
 
+	tasksToJson, err := t.TasksToJson(tasks)
 	if err != nil {
-		err = store.Write(tasks)
-		if err != nil {
-			utils.PrintError(err, "TasksUpdateError:")
-		}
+		utils.PrintError(err, "TasksToJsonError:")
 	}
+	err = store.Write(tasksToJson)
+	if err != nil {
+		utils.PrintError(err, "TasksUpdateError:")
+	}
+
 }
