@@ -21,7 +21,22 @@ func New(title string) *Task {
 }
 
 func (t *Task) Save() error {
-	return store.Append(t)
+	tasks, err := GetTasks()
+	if err != nil {
+		utils.PrintError(err, "TasksLoadingFailed:")
+	}
+
+	t.Print()
+	fmt.Println("Before save")
+	for _, tsk := range tasks {
+		tsk.Print()
+	}
+	tasks = append(tasks, *t)
+	fmt.Println("after save")
+	for _, tsk := range tasks {
+		tsk.Print()
+	}
+	return store.Write(tasks)
 }
 
 func (t *Task) Complete() {
@@ -36,30 +51,29 @@ func (t *Task) Print() {
 }
 
 func GetTasks() ([]Task, error) {
-	lines, err := store.Read()
+	content, err := store.Read()
 
 	if err != nil {
 		return nil, err
 	}
 
 	var tasks []Task
-	for _, line := range lines {
-		var task Task
-		_ = json.Unmarshal([]byte(line), &task)
-		tasks = append(tasks, task)
-	}
+	err = json.Unmarshal([]byte(content), &tasks)
 
 	return tasks, nil
 }
 
 func PrintTasks() error {
-	lines, err := store.Read()
+	content, err := store.Read()
 	if err != nil {
 		return err
 	}
 
-	for _, line := range lines {
-		fmt.Println(line)
+	var tasks []Task
+	err = json.Unmarshal([]byte(content), &tasks)
+
+	for _, task := range tasks {
+		task.Print()
 	}
 
 	return nil
