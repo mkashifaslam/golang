@@ -41,7 +41,7 @@ func Handler(cmd Cmd, action Act, args string) {
 	case Help:
 		fmt.Println("Help: tasks <command> [<args>]")
 	case Exit:
-		os.Exit(1)
+		os.Exit(0)
 	default:
 		fmt.Println("Help: tasks <command> [<args>]")
 	}
