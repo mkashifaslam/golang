@@ -7,5 +7,6 @@ import (
 
 func Run(action a.Act, args string) {
 	a.Run(action, args)
+	fmt.Println("--------------------------------------------")
 	fmt.Println("Done")
 }

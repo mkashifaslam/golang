@@ -105,6 +105,10 @@ func buildCommand(args []string, act Act) (*string, error) {
 		return nil, errors.New("expected a flag argument")
 	}
 
+	if len(args) < 3 {
+		return nil, errors.New("invalid flag argument")
+	}
+
 	err = cmd.Parse(args[1:])
 	if err != nil {
 		return nil, errors.New("expected a flag")
@@ -115,7 +119,7 @@ func buildCommand(args []string, act Act) (*string, error) {
 
 func PrintHelp() {
 	fmt.Println("Welcome Todos app")
-	fmt.Println("----------------------")
+	fmt.Println("--------------------------------------------")
 	fmt.Printf("\nCommands:" +
 		"\nhelp get help" +
 		"\nexit exit app\n" +
@@ -125,5 +129,5 @@ func PrintHelp() {
 		"\ntasks complete <taskId>" +
 		"\ntask delete <taskId>" +
 		"\n\n")
-	fmt.Println("----------------------")
+	fmt.Println("--------------------------------------------")
 }
