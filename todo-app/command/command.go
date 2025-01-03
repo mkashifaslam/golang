@@ -1,105 +1,129 @@
 package command
 
 import (
+	"errors"
+	"flag"
 	"fmt"
 	"github.com/mkashifaslam/golang/todo-app/action"
-	"github.com/mkashifaslam/golang/todo-app/app"
-	"github.com/mkashifaslam/golang/todo-app/input"
 	"github.com/mkashifaslam/golang/todo-app/utils"
 	"os"
-	"strings"
 )
 
-type Cmd string
+func Setup() (*Command, error) {
+	var err error
+	osArg := os.Args
 
-type Act = action.Act
+	tasksCmd := flag.NewFlagSet(string(Tasks), flag.ExitOnError)
 
-const (
-	Tasks Cmd = "tasks"
-	Help  Cmd = "help"
-	Exit  Cmd = "exit"
-)
+	listCmd := flag.NewFlagSet(string(action.List), flag.ExitOnError)
 
-type Command struct {
-	App    Cmd
-	Action Act
-	Args   string
-}
-
-func (cmd *Command) Print() {
-	fmt.Printf("%v\n %v\n %s\n", cmd.App, cmd.Action, cmd.Args)
-}
-
-func New(app Cmd, action Act, args string) *Command {
-	return &Command{App: app, Action: action, Args: args}
-}
-
-func Run() {
-	userCmd, err := GetInput()
-	utils.PrintError(err, "InputError:")
-	inputCmd, err := Parse(userCmd)
-	utils.PrintError(err, "ParsingError:")
-	if inputCmd != nil {
-		Handler(inputCmd.App, inputCmd.Action, inputCmd.Args)
+	if len(osArg) < 2 || osArg[1] != string(Tasks) {
+		return nil, errors.New("expected '" + string(Tasks) + "' command")
 	}
-}
 
-func Handler(cmd Cmd, action Act, args string) {
-	switch cmd {
-	case Tasks:
-		app.Run(action, args)
-	case Help:
-		fmt.Println("Help: tasks <command> [<args>]")
-	case Exit:
-		os.Exit(0)
+	err = tasksCmd.Parse(osArg[2:])
+	if err != nil {
+		return nil, errors.New("invalid arguments")
+	}
+
+	args := tasksCmd.Args()
+
+	if len(args) < 1 {
+		return nil, errors.New("expected a subcommand like '" + string(action.List) + "' under '" + string(Tasks) + "'")
+	}
+
+	var cmdArg *string
+	var act Act
+
+	switch args[0] {
+	case string(action.List):
+		act = action.List
+		err = listCmd.Parse(args)
+		if err != nil {
+			err = utils.ErrorHandler(err, "ListCmdFailed")
+		}
+		cmdArg = nil
+	case string(action.Add):
+		act = action.Add
+		cmdArg, err = buildCommand(args, action.Add)
+		if err != nil {
+			err = utils.ErrorHandler(err, "AddCmdFailed")
+		}
+	case string(action.Find):
+		act = action.Find
+		cmdArg, err = buildCommand(args, action.Find)
+		if err != nil {
+			err = utils.ErrorHandler(err, "FindCmdFailed")
+		}
+	case string(action.Complete):
+		act = action.Complete
+		cmdArg, err = buildCommand(args, action.Complete)
+		if err != nil {
+			err = utils.ErrorHandler(err, "CompleteCmdFailed")
+		}
+	case string(action.Delete):
+		act = action.Delete
+		cmdArg, err = buildCommand(args, action.Delete)
+		if err != nil {
+			err = utils.ErrorHandler(err, "DeleteCmdFailed")
+		}
 	default:
-		fmt.Println("Help: tasks <command> [<args>]")
+		err = utils.NewError(fmt.Sprintf("Unknown subcommand: %s\n", args[0]))
 	}
+
+	if cmdArg == nil {
+		defaultVal := ""
+		cmdArg = &defaultVal
+	}
+
+	return New(Tasks, act, *cmdArg), err
 }
 
-func GetInput() (string, error) {
-	cmd := input.GetUserStringInput("todo-app$:")
-	if cmd == "" {
-		return "", utils.ErrorHandler(nil, "Command not valid")
-	}
-	return cmd, nil
-}
-
-func Parse(cmd string) (*Command, error) {
+func buildCommand(args []string, act Act) (*string, error) {
 	var (
-		cmdApp Cmd
-		cmdAct Act
-		cmdArg string
+		val *string
+		err error
 	)
-	cmdSlice := strings.Split(cmd, " ")
 
-	if len(cmdSlice) < 1 {
-		return nil, utils.NewError("Command not found")
+	if len(args) < 1 {
+		return nil, errors.New("expected a subcommand")
 	}
 
-	cmdApp = Cmd(cmdSlice[0])
-
-	if cmdApp != Tasks {
-		return New(cmdApp, cmdAct, cmdArg), nil
+	cmd := flag.NewFlagSet(string(act), flag.ExitOnError)
+	switch act {
+	case action.Add:
+		val = cmd.String("title", "", "Title of the task")
+	case action.Find:
+		val = cmd.String("id", "", "ID of the task")
+	case action.Complete:
+		val = cmd.String("id", "", "ID of the task")
+	case action.Delete:
+		val = cmd.String("id", "", "ID of the task")
 	}
 
-	if len(cmdSlice) < 2 {
-		return nil, utils.NewError("Command not valid")
+	if len(args) < 2 {
+		return nil, errors.New("expected a flag argument")
 	}
 
-	cmdApp, cmdAct = Cmd(cmdSlice[0]), Act(cmdSlice[1])
-
-	if len(cmdSlice) > 2 {
-		cmdArg = strings.Join(cmdSlice[2:], " ")
+	err = cmd.Parse(args[1:])
+	if err != nil {
+		return nil, errors.New("expected a flag")
 	}
 
-	if isArgsRequired(cmdAct) && cmdArg == "" {
-		return nil, utils.NewError("Command args not valid")
-	}
-
-	return New(cmdApp, cmdAct, cmdArg), nil
+	return val, err
 }
 
-func isArgsRequired(cmdAction Act) bool {
-	return action.IsValid(cmdAction) && cmdAction != action.List
+func PrintHelp() {
+	fmt.Println("Welcome Todos app")
+	fmt.Println("----------------------")
+	fmt.Printf("\nCommands:" +
+		"\nhelp get help" +
+		"\nexit exit app\n" +
+		"\ntasks add <title>" +
+		"\ntasks list" +
+		"\ntasks find <taskId>" +
+		"\ntasks complete <taskId>" +
+		"\ntask delete <taskId>" +
+		"\n\n")
+	fmt.Println("----------------------")
 }
