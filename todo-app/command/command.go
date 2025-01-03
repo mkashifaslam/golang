@@ -9,39 +9,24 @@ import (
 	"os"
 )
 
-func Setup() (*Command, error) {
-	var err error
-	osArg := os.Args
+func Setup() (cmd *Command, err error) {
+	osArgs := os.Args
 
-	tasksCmd := flag.NewFlagSet(string(Tasks), flag.ExitOnError)
-
-	listCmd := flag.NewFlagSet(string(action.List), flag.ExitOnError)
-
-	if len(osArg) < 2 || osArg[1] != string(Tasks) {
-		return nil, errors.New("expected '" + string(Tasks) + "' command")
+	if len(osArgs) < 2 {
+		err = errors.New("no command specified")
+		return
 	}
 
-	err = tasksCmd.Parse(osArg[2:])
-	if err != nil {
-		return nil, errors.New("invalid arguments")
-	}
+	args := osArgs[2:]
 
-	args := tasksCmd.Args()
+	var (
+		cmdArg *string
+		act    Act
+	)
 
-	if len(args) < 1 {
-		return nil, errors.New("expected a subcommand like '" + string(action.List) + "' under '" + string(Tasks) + "'")
-	}
-
-	var cmdArg *string
-	var act Act
-
-	switch args[0] {
+	switch osArgs[1] {
 	case string(action.List):
 		act = action.List
-		err = listCmd.Parse(args)
-		if err != nil {
-			err = utils.ErrorHandler(err, "ListCmdFailed")
-		}
 		cmdArg = nil
 	case string(action.Add):
 		act = action.Add
@@ -68,7 +53,7 @@ func Setup() (*Command, error) {
 			err = utils.ErrorHandler(err, "DeleteCmdFailed")
 		}
 	default:
-		err = utils.NewError(fmt.Sprintf("Unknown subcommand: %s\n", args[0]))
+		err = utils.ErrorHandler(err, "CmdFailed")
 	}
 
 	if cmdArg == nil {
@@ -76,7 +61,9 @@ func Setup() (*Command, error) {
 		cmdArg = &defaultVal
 	}
 
-	return New(Tasks, act, *cmdArg), err
+	cmd = New(act, *cmdArg)
+
+	return
 }
 
 func buildCommand(args []string, act Act) (*string, error) {
@@ -85,11 +72,8 @@ func buildCommand(args []string, act Act) (*string, error) {
 		err error
 	)
 
-	if len(args) < 1 {
-		return nil, errors.New("expected a subcommand")
-	}
-
 	cmd := flag.NewFlagSet(string(act), flag.ExitOnError)
+
 	switch act {
 	case action.Add:
 		val = cmd.String("title", "", "Title of the task")
@@ -101,17 +85,17 @@ func buildCommand(args []string, act Act) (*string, error) {
 		val = cmd.String("id", "", "ID of the task")
 	}
 
-	if len(args) < 2 {
+	if len(args) < 1 {
 		return nil, errors.New("expected a flag argument")
 	}
 
-	if len(args) < 3 {
+	if len(args) < 2 {
 		return nil, errors.New("invalid flag argument")
 	}
 
-	err = cmd.Parse(args[1:])
+	err = cmd.Parse(args)
 	if err != nil {
-		return nil, errors.New("expected a flag")
+		return nil, errors.New("flag parsing error")
 	}
 
 	return val, err
@@ -121,13 +105,10 @@ func PrintHelp() {
 	fmt.Println("Welcome Todos app")
 	fmt.Println("--------------------------------------------")
 	fmt.Printf("\nCommands:" +
-		"\nhelp get help" +
-		"\nexit exit app\n" +
-		"\ntasks add <title>" +
-		"\ntasks list" +
-		"\ntasks find <taskId>" +
-		"\ntasks complete <taskId>" +
-		"\ntask delete <taskId>" +
+		"\nlist" +
+		"\nfind <taskId>" +
+		"\ncomplete <taskId>" +
+		"\ndelete <taskId>" +
 		"\n\n")
 	fmt.Println("--------------------------------------------")
 }
