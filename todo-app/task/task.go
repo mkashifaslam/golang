@@ -3,20 +3,24 @@ package task
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mergestat/timediff"
 	"github.com/mkashifaslam/golang/todo-app/store"
 	"github.com/mkashifaslam/golang/todo-app/utils"
+	"time"
 )
 
 type Task struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	IsCompleted bool   `json:"is_completed"`
+	ID          int       `json:"id"`
+	Title       string    `json:"title"`
+	IsCompleted bool      `json:"is_completed"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func New(title string) *Task {
 	return &Task{
-		ID:    utils.GenerateRandomInt(1, 100),
-		Title: title,
+		ID:        utils.GenerateRandomInt(1, 100),
+		Title:     title,
+		CreatedAt: time.Now(),
 	}
 }
 
@@ -40,11 +44,9 @@ func (t *Task) Complete() {
 	t.IsCompleted = true
 }
 
-func (t *Task) Delete() {
-}
-
 func (t *Task) Print() {
-	fmt.Printf("ID: %d, Title: %s, IsComplete: %t\n", t.ID, t.Title, t.IsCompleted)
+	ctime := timediff.TimeDiff(t.CreatedAt)
+	fmt.Printf("ID: %d, Title: %s, IsComplete: %t, CreatedAt: %s\n", t.ID, t.Title, t.IsCompleted, ctime)
 }
 
 func GetTasks() ([]Task, error) {

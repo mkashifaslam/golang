@@ -34,6 +34,16 @@ func New(app Cmd, action Act, args string) *Command {
 	return &Command{App: app, Action: action, Args: args}
 }
 
+func Run() {
+	userCmd, err := GetInput()
+	utils.PrintError(err, "InputError:")
+	inputCmd, err := Parse(userCmd)
+	utils.PrintError(err, "ParsingError:")
+	if inputCmd != nil {
+		Handler(inputCmd.App, inputCmd.Action, inputCmd.Args)
+	}
+}
+
 func Handler(cmd Cmd, action Act, args string) {
 	switch cmd {
 	case Tasks:

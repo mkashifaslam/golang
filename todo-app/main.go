@@ -1,31 +1,13 @@
 package main
 
 import (
-	"fmt"
-	cmd "github.com/mkashifaslam/golang/todo-app/command"
-	"github.com/mkashifaslam/golang/todo-app/utils"
+	"github.com/mkashifaslam/golang/todo-app/command"
 )
 
 func main() {
-	fmt.Println("Welcome Todos app")
-	fmt.Println("----------------------")
-	fmt.Printf("\nCommands:" +
-		"\nhelp get help" +
-		"\nexit exit app\n" +
-		"\ntasks add <title>" +
-		"\ntasks list" +
-		"\ntasks find <taskId>" +
-		"\ntasks complete <taskId>" +
-		"\ntask delete <taskId>" +
-		"\n\n")
-	fmt.Println("----------------------")
+	command.PrintHelp()
+
 	for {
-		userCmd, err := cmd.GetInput()
-		utils.PrintError(err, "InputError:")
-		inputCmd, err := cmd.Parse(userCmd)
-		utils.PrintError(err, "ParsingError:")
-		if inputCmd != nil {
-			cmd.Handler(inputCmd.App, inputCmd.Action, inputCmd.Args)
-		}
+		command.Run()
 	}
 }
