@@ -8,8 +8,7 @@ import (
 	"slices"
 )
 
-type WalkDirFunc = func(string, fs.DirEntry, error) error
-type SkipOpts = map[string][]string
+type SkipOpts map[string][]string
 
 func main() {
 	root := "/Users/muhammadkashif/kashif/courses/golang"
@@ -26,7 +25,7 @@ func main() {
 	}
 }
 
-func scanDir(skipOpts SkipOpts) WalkDirFunc {
+func scanDir(skipOpts SkipOpts) fs.WalkDirFunc {
 	var (
 		skipDirs  = skipOpts["dir"]
 		skipFiles = skipOpts["file"]
