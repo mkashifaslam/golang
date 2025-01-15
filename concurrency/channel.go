@@ -13,16 +13,20 @@ func Channel() {
 
 	sendChanValue(ch, num)
 
-	//receiveChanWithFor(ch, num)
+	//receiveChanWithSelect(ch)
 
-	receiveChanWithSelect(ch)
+	receiveChanWithFor(ch, num)
+
+	//time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+
+	//close(ch)
 
 }
 
 func sendChanValue(ch chan int, num int) {
 	for i := 1; i <= num; i++ {
 		go func(i int) {
-			fmt.Printf("goroutine %d\n", i)
+			fmt.Printf("goroutine output %d\n", i)
 			ch <- i
 		}(i)
 	}
@@ -36,7 +40,7 @@ func receiveChanWithFor(ch chan int, num int) {
 }
 
 func receiveChanWithSelect(ch chan int) {
-	timeout := time.After(time.Duration(rand.Intn(5)) * time.Millisecond)
+	timeout := time.After(time.Duration(rand.Intn(100)) * time.Millisecond)
 
 	for {
 		select {
