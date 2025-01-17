@@ -15,7 +15,7 @@ func main() {
 		return
 	}
 
-	number := lib.Str2Num(str)
+	number := lib.StrToNumber(str)
 	result := output.FormatCommas(number)
 
 	fmt.Println("Number is", result)
