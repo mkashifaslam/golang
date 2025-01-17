@@ -2,26 +2,22 @@ package main
 
 import (
 	"fmt"
+	"github.com/mkashifaslam/golang/str2num/input"
+	"github.com/mkashifaslam/golang/str2num/lib"
+	"github.com/mkashifaslam/golang/str2num/output"
 )
 
 func main() {
 	fmt.Println("Program to convert strings to numbers")
-
-	// store map of string keyword to number
-	// one - nine => 1 - 9
-	// hundred => 100 -> 1 * 100
-	// thousand => 1,000 -> 100 * 10
-	// million => 1,000,000 -> 1,000* 1,000
-	// billion => 1,000,000,000 -> 1,000,000 * 1,000
-	// trillion => 1,000,000,000,000 -> 1,000,000,000 * 1,000
-	// quadrillion => 1,000,000,000,000,000
-
-	var str = GetStringInput("Enter a string: ")
+	var str = input.GetStringInput("Enter a string: ")
 	if str == "" {
 		fmt.Println("Input string is empty")
 		return
 	}
 
-	fmt.Printf("Numer is %d\n", Str2Num(str))
+	number := lib.Str2Num(str)
+	result := output.FormatCommas(number)
+
+	fmt.Println("Number is", result)
 
 }
