@@ -6,7 +6,7 @@ import (
 
 type Str2NumMap map[string]int64
 
-func GetStr2NumMap() Str2NumMap {
+func getStr2NumMap() Str2NumMap {
 	var str2numMap = make(Str2NumMap)
 
 	var (
@@ -39,7 +39,7 @@ func GetStr2NumMap() Str2NumMap {
 }
 
 func Str2Num(str string) int64 {
-	str2numMap := GetStr2NumMap()
+	str2numMap := getStr2NumMap()
 
 	strValues := strings.Split(str, " ")
 
