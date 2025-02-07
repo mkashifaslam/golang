@@ -18,15 +18,6 @@ const (
 	Complete Act = "complete"
 )
 
-func IsValid(act Act) bool {
-	switch act {
-	case Add, List, Find, Delete, Complete:
-		return true
-	default:
-		return false
-	}
-}
-
 func Run(action Act, args string) {
 	switch action {
 	case Add:
@@ -103,11 +94,11 @@ func completeTask(taskId string) {
 	if err != nil {
 		utils.PrintError(err, "TasksToJsonError:")
 	}
+
 	err = store.Write(tasksToJson)
 	if err != nil {
 		utils.PrintError(err, "TasksUpdateError:")
 	}
-
 }
 
 func deleteTask(taskId string) {
@@ -131,6 +122,7 @@ func deleteTask(taskId string) {
 	if err != nil {
 		utils.PrintError(err, "TasksToJsonError:")
 	}
+
 	err = store.Write(tasksToJson)
 	if err != nil {
 		utils.PrintError(err, "TasksUpdateError:")
