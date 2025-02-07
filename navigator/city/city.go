@@ -6,6 +6,7 @@ import (
 	"github.com/mkashifaslam/golang/navigator/csv"
 	"github.com/mkashifaslam/golang/navigator/lib"
 	"github.com/mkashifaslam/golang/navigator/location"
+	"strings"
 )
 
 type City struct {
@@ -56,12 +57,16 @@ func GetList(cities csv.Data) []City {
 
 func Search(cities []City, name string) (City, error) {
 	for _, city := range cities {
-		if city.Name == name {
+		if compare(city.Name, name) {
 			return city, nil
 		}
 	}
-
 	return City{}, errors.New("city not found")
+}
+
+func compare(storeCity, inputCity string) bool {
+	var cityA, cityB = strings.ToLower(storeCity), strings.ToLower(inputCity)
+	return strings.Contains(cityA, cityB)
 }
 
 func PrintAll(cities []City) {

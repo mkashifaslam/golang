@@ -15,9 +15,6 @@ func LoadData(fileName string) (Data, error) {
 		return nil, errors.New("file name is required")
 	}
 
-	// Open the CSV file
-	fmt.Println("Loading csv file", fileName)
-
 	file, err := os.Open(fileName)
 	if err != nil {
 		//fmt.Println("Error opening file:", err)

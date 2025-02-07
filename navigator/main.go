@@ -11,14 +11,15 @@ import (
 var csvFile = "cities.csv"
 
 func main() {
-	fmt.Println("Navigator")
+	fmt.Println("PAK Geo Navigator")
+	fmt.Println("Loading cities...")
 	cities, err := csv.LoadData(csvFile)
 	if err != nil {
 		_ = fmt.Errorf("error loading cities.csv: %v", err)
 		return
 	}
 
-	fmt.Printf("Loaded %d cities.csv\n", len(cities))
+	fmt.Printf("Loaded %d cities\n", len(cities))
 
 	formattedCities := city.GetList(cities)
 
@@ -32,17 +33,20 @@ func main() {
 	origin = input.GetStringInput("Enter origin city name:")
 	destination = input.GetStringInput("Enter destination city name:")
 
+	fmt.Println("Searching origin city...")
 	cityA, err := city.Search(formattedCities, origin)
 	if err != nil {
-		_ = fmt.Errorf("error searching cities: %v", err)
+		fmt.Printf("error searching cities: %v", err)
 		return
 	}
+	fmt.Println("Origin city found")
+	fmt.Println("Searching destination city...")
 	cityB, err := city.Search(formattedCities, destination)
 	if err != nil {
-		_ = fmt.Errorf("error searching cities: %v", err)
+		fmt.Printf("error searching cities: %v", err)
 		return
 	}
-
+	fmt.Println("Destination city found")
 	distance := cityA.Distance(cityB)
 	fmt.Println("Distance:", lib.GetFormattedDistance(distance))
 }
