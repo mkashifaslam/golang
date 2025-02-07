@@ -6,6 +6,7 @@ import (
 	"github.com/mkashifaslam/golang/navigator/csv"
 	"github.com/mkashifaslam/golang/navigator/lib"
 	"github.com/mkashifaslam/golang/str2num/input"
+	"time"
 )
 
 var csvFile = "cities.csv"
@@ -31,19 +32,21 @@ func main() {
 	fmt.Printf("\n--------------------------------------\n")
 
 	origin = input.GetStringInput("Enter origin city name:")
-	destination = input.GetStringInput("Enter destination city name:")
 
 	fmt.Println("Searching origin city...")
+	time.Sleep(time.Second * 2)
 	cityA, err := city.Search(formattedCities, origin)
 	if err != nil {
-		fmt.Printf("error searching cities: %v", err)
+		fmt.Println(err)
 		return
 	}
 	fmt.Println("Origin city found")
+	destination = input.GetStringInput("Enter destination city name:")
 	fmt.Println("Searching destination city...")
+	time.Sleep(time.Second * 2)
 	cityB, err := city.Search(formattedCities, destination)
 	if err != nil {
-		fmt.Printf("error searching cities: %v", err)
+		fmt.Println(err)
 		return
 	}
 	fmt.Println("Destination city found")
