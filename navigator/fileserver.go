@@ -10,14 +10,14 @@ import (
 )
 
 func RunServer() {
-	fs := http.FileServer(http.Dir("data"))
+	fileSystem := http.FileServer(http.Dir("data"))
 
 	// serve static files in a directory
-	http.Handle("/", fs)
+	http.Handle("/", fileSystem)
 
 	http.HandleFunc("/csv", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
-		csvData, err := os.ReadFile("data/cities.csv")
+		csvData, err := os.ReadFile(csvFile)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -25,7 +25,7 @@ func RunServer() {
 	})
 
 	http.HandleFunc("/cities", func(w http.ResponseWriter, r *http.Request) {
-		csvData, err := csv.LoadData("data/cities.csv")
+		csvData, err := csv.LoadData(csvFile, static)
 		if err != nil {
 			log.Fatal(err)
 		}

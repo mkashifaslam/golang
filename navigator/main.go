@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"github.com/mkashifaslam/golang/navigator/city"
 	"github.com/mkashifaslam/golang/navigator/csv"
@@ -9,19 +10,21 @@ import (
 	"time"
 )
 
+//go:embed data/cities.csv
+var static embed.FS
 var csvFile = "data/cities.csv"
 
 func main() {
 	fmt.Println("PAK Geo Navigator")
 	fmt.Println("Loading cities...")
-	cities, err := csv.LoadData(csvFile)
+	cities, err := csv.LoadData(csvFile, static)
 	if err != nil {
-		_ = fmt.Errorf("error loading cities.csv: %v", err)
+		fmt.Println(err)
 		return
 	}
 
 	fmt.Printf("Loaded %d cities\n", len(cities))
-	fmt.Println("http://localhost:8080")
+	fmt.Println("http://localhost:8080/cities")
 	go RunServer()
 	formattedCities := city.GetList(cities)
 

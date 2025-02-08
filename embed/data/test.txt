@@ -1,0 +1,1 @@
+testing this file by golang embed package

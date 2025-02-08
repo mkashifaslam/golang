@@ -1,43 +1,39 @@
 package csv
 
 import (
+	"bufio"
+	"bytes"
+	"embed"
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"os"
+	"log"
+	"strings"
 )
 
 type Data map[string]map[string]string
 
-func LoadData(fileName string) (Data, error) {
-
+func LoadData(fileName string, fs embed.FS) (Data, error) {
+	log.SetFlags(0)
+	//log.Println("filename", fileName)
 	if fileName == "" {
 		return nil, errors.New("file name is required")
 	}
 
-	file, err := os.Open(fileName)
-	if err != nil {
-		//fmt.Println("Error opening file:", err)
-		return nil, errors.New("Error opening file: " + err.Error())
-	}
-	defer file.Close()
-
-	// Read the file using csv.Reader
-	reader := csv.NewReader(file)
-
-	// Read all rows (including the header)
-	records, err := reader.ReadAll()
+	//records, err := readOSFile(fileName)
+	records, err := readFile(fileName, fs)
 	if err != nil {
 		//fmt.Println("Error reading CSV file:", err)
 		return nil, errors.New("Error reading CSV file: " + err.Error())
 	}
-
+	//log.Println("file content checking...")
 	// Check if the CSV is not empty
 	if len(records) < 2 {
 		//fmt.Println("CSV file is empty or has no data rows.")
 		return nil, errors.New("csv file is empty or has no data rows")
 	}
 
+	//log.Println("file content exists...")
 	// Get the header (column names)
 	header := records[0]
 
@@ -60,6 +56,44 @@ func LoadData(fileName string) (Data, error) {
 	}
 
 	return dataMap, nil
+}
+
+func readFile(fileName string, fs embed.FS) ([][]string, error) {
+	//file, err := os.Open(fileName)
+	file, err := fs.Open(fileName)
+	//log.Println("file open...")
+	if err != nil {
+		return nil, errors.New("Error opening file: " + err.Error())
+	}
+
+	defer file.Close()
+
+	//log.Println("file open success")
+	// Read the file using csv.Reader
+	reader := csv.NewReader(file)
+
+	// Read all rows (including the header)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, errors.New("Error reading file: " + err.Error())
+	}
+
+	return records, nil
+}
+
+func scanFile(fileName string, fs embed.FS) ([][]string, error) {
+	content, err := fs.ReadFile(fileName)
+	if err != nil {
+		return nil, errors.New("Error reading file: " + err.Error())
+	}
+
+	var records [][]string
+	scanner := bufio.NewScanner(bytes.NewReader(content))
+	for scanner.Scan() {
+		records = append(records, strings.Split(scanner.Text(), ","))
+	}
+
+	return records, nil
 }
 
 func Print(data Data) {
