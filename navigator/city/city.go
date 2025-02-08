@@ -14,6 +14,15 @@ type City struct {
 	Location location.Location
 }
 
+type Compass int
+
+//go:generate stringer --type Compass --trimprefix compass --linecomment
+const (
+	_           Compass = iota
+	Origin              // Origin
+	Destination         // Destination
+)
+
 func New(name string, latD, lngD string) *City {
 	lat, lng := lib.ConvToFloat64(latD), lib.ConvToFloat64(lngD)
 	return &City{
@@ -55,9 +64,10 @@ func GetList(cities csv.Data) []City {
 	return formattedCities
 }
 
-func Search(cities []City, name string) (City, error) {
+func Search(cities []City, name string, direction Compass) (City, error) {
 	for _, city := range cities {
 		if compare(city.Name, name) {
+			fmt.Printf("%s city found: %s\n", direction.String(), city.Name)
 			return city, nil
 		}
 	}
