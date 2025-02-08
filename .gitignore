@@ -28,3 +28,4 @@ go.work.sum
 example
 *.db
 */**.txt
+.idea

@@ -52,5 +52,5 @@ func main() {
 	}
 
 	distance := cityA.Distance(cityB)
-	fmt.Println("Distance:", lib.GetFormattedDistance(distance))
+	fmt.Println("Shortest Distance:", lib.GetFormattedDistance(distance))
 }
