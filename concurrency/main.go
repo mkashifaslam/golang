@@ -16,6 +16,7 @@ func main() {
 	//	fmt.Println("result", result.Processed)
 	//}
 
-	Channel()
-
+	//Channel()
+	//OrderWithSingleChannel()
+	OrderWithMutex()
 }

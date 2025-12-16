@@ -1,9 +1,10 @@
 package models
 
 import (
-	"github.com/mkashifaslam/golang/rest-api/db"
 	"log"
 	"time"
+
+	"github.com/mkashifaslam/golang/rest-api/db"
 )
 
 var logger = log.Default()

@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mkashifaslam/golang/rest-api/db"
 	"github.com/mkashifaslam/golang/rest-api/routes"
-	"log"
 )
 
 var logger = log.Default()

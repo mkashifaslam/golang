@@ -9,13 +9,19 @@ import (
 
 func Channel() {
 
-	var wg sync.WaitGroup
+	var sWg sync.WaitGroup
+	var rWg sync.WaitGroup
 
 	num := 5
 
-	ch := make(chan int)
+	ch := make(chan int, num)
 
-	sendChanValue(ch, num, &wg)
+	sendChanValue(ch, num, &sWg)
+
+	go func() {
+		sWg.Wait()
+		close(ch)
+	}()
 
 	//receiveChanWithSelect(ch)
 
@@ -23,9 +29,9 @@ func Channel() {
 
 	//receiveChanWithSelect(ch)
 
-	receiveChanWithWait(ch, num, &wg)
+	receiveChanWithWait(ch, num, &rWg)
 
-	wg.Wait()
+	rWg.Wait()
 
 	fmt.Println("All goroutines done")
 
@@ -36,14 +42,14 @@ func Channel() {
 }
 
 func sendChanValue(ch chan int, num int, wg *sync.WaitGroup) {
+	wg.Add(num)
 	for i := 1; i <= num; i++ {
-		wg.Add(1)
 		go func(i int) {
+			defer wg.Done()
 			fmt.Printf("goroutine input %d\n", i)
 			ch <- i
 		}(i)
 	}
-
 }
 
 func receiveChanWithFor(ch chan int, num int) {
@@ -53,7 +59,10 @@ func receiveChanWithFor(ch chan int, num int) {
 }
 
 func receiveChanWithSelect(ch chan int) {
-	timeout := time.After(time.Duration(rand.Intn(100)) * time.Millisecond)
+	var random = rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10)
+	var ttl = time.Duration(random) * time.Millisecond
+	fmt.Printf("timeout set to %ds, random number is %d \n", ttl/1000, random)
+	timeout := time.After(ttl)
 
 	for {
 		select {
@@ -68,11 +77,11 @@ func receiveChanWithSelect(ch chan int) {
 }
 
 func receiveChanWithWait(ch chan int, num int, wg *sync.WaitGroup) {
+	wg.Add(num)
 	for i := 1; i <= num; i++ {
 		go func() {
 			defer wg.Done()
 			fmt.Println("goroutine output", <-ch)
 		}()
 	}
-
 }
